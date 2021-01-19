@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.6.6;
 
 import "./Ownable.sol";
 import "./SafeMath.sol";
@@ -28,21 +28,21 @@ contract ZombieFactory is Ownable {
     mapping (uint => address) public zombieToOwner;
     mapping (address => uint) ownerZombieCount;
 
-    function _createZombie(string _name, uint _dna) internal {
-        uint zombieId = zombies.push(Zombie(_name, _dna, 1, 0, 0, 0)) - 1;
-        // uint zombieId = zombies.push(Zombie(_name, _dna, 1, uint32(now + cooldownTime), 0, 0)) - 1;
+    function _createZombie(string memory _name, uint _dna) internal {
+        zombies.push(Zombie(_name, _dna, 1, 0, 0, 0));
+        uint zombieId = zombies.length - 1;
         
         zombieToOwner[zombieId] = msg.sender;
         ownerZombieCount[msg.sender] = ownerZombieCount[msg.sender].add(1);
         
-        NewZombie(zombieId, _name, _dna);
+        emit NewZombie(zombieId, _name, _dna);
     }
 
-    function _generateRandomDna(string _str) private view returns(uint) {
-        return uint(keccak256(_str)) % dnaModulus;
+    function _generateRandomDna(string memory _str) private view returns(uint) {
+        return uint(keccak256(bytes(_str))) % dnaModulus;
     }
 
-    function createRandomZombie(string _name) public {
+    function createRandomZombie(string memory _name) public {
         require(ownerZombieCount[msg.sender] == 0);
         _createZombie(_name, _generateRandomDna(_name));
     }

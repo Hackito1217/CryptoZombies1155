@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.6.6;
 
 import "./ZombieFeeding.sol";
 
@@ -11,7 +11,7 @@ contract ZombieHelper is ZombieFeeding {
     }
 
     function withdraw() external onlyOwner {
-        owner.transfer(this.balance);
+        owner.transfer(msg.sender.balance);
     }
 
     function setLevelUpFee(uint _fee) external onlyOwner {
@@ -23,7 +23,7 @@ contract ZombieHelper is ZombieFeeding {
         zombies[_zombieId].level++;
     }
 
-    function changeName(uint _zombieId, string _newName) external aboveLevel(2, _zombieId) onlyOwnerOf(_zombieId) {
+    function changeName(uint _zombieId, string calldata _newName) external aboveLevel(2, _zombieId) onlyOwnerOf(_zombieId) {
         require(msg.sender == zombieToOwner[_zombieId]);
         zombies[_zombieId].name = _newName;
     }
@@ -33,7 +33,7 @@ contract ZombieHelper is ZombieFeeding {
         zombies[_zombieId].dna = _newDna;
     }
 
-    function getZombiesByOwner(address _owner) external view returns(uint[]) {
+    function getZombiesByOwner(address _owner) external view returns(uint[] memory) {
         uint[] memory result = new uint[](ownerZombieCount[_owner]);
         uint counter = 0;
 

@@ -1,10 +1,10 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.6.6;
 
 import "./ZombieFactory.sol";
 
-contract KittyInterface {
+abstract contract KittyInterface {
 
-    function getKitty(uint256 _id) external view returns (
+    function getKitty(uint256 _id) external view virtual returns (
         bool isGestating,
         bool isReady,
         uint256 cooldownIndex,
@@ -39,7 +39,7 @@ contract ZombieFeeding is ZombieFactory {
         else return false;
     }
 
-    function _feedAndMultiply(uint _zombieId, uint _targetDna, string _species) internal onlyOwnerOf(_zombieId) {
+    function _feedAndMultiply(uint _zombieId, uint _targetDna, string memory _species) internal onlyOwnerOf(_zombieId) {
         require(msg.sender == zombieToOwner[_zombieId]);
 
         Zombie storage myZombie = zombies[_zombieId];
@@ -49,7 +49,7 @@ contract ZombieFeeding is ZombieFactory {
         _targetDna = _targetDna % dnaModulus;
         uint newDna = (myZombie.dna + _targetDna) / 2;
 
-        if (keccak256(_species) == keccak256("kitty")) {
+        if (keccak256(bytes(_species)) == keccak256(bytes("kitty"))) {
             newDna = newDna - newDna % 100 + 99;
         }
 

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.19;
+pragma solidity ^0.6.6;
 
 import "./ZombieBattle.sol";
 import "./ERC721.sol";
@@ -6,11 +6,11 @@ import "./ERC721.sol";
 contract ZombieOwnership is ZombieBattle, ERC721 {
     mapping (uint => address) zombieApprovals;
     
-    function balanceOf(address _owner) public view returns(uint) {
+    function balanceOf(address _owner) public virtual override view returns(uint) {
         return ownerZombieCount[_owner];
     }
 
-    function ownerOf(uint _tokenId) public view returns(address) {
+    function ownerOf(uint _tokenId) public virtual override view returns(address) {
         return zombieToOwner[_tokenId];
     }
 
@@ -19,19 +19,19 @@ contract ZombieOwnership is ZombieBattle, ERC721 {
         ownerZombieCount[_from] = ownerZombieCount[_from].sub(1);
         zombieToOwner[_tokenId] = _to;
 
-        Transfer(_from, _to, _tokenId);
+        emit Transfer(_from, _to, _tokenId);
     }
 
-    function transfer(address _to, uint256 _tokenId) public {
+    function transfer(address _to, uint256 _tokenId) public virtual override {
         _transfer(msg.sender, _to, _tokenId);
     }
 
-    function approve(address _to, uint256 _tokenId) public onlyOwnerOf(_tokenId) {
+    function approve(address _to, uint256 _tokenId) public virtual override onlyOwnerOf(_tokenId) {
         zombieApprovals[_tokenId] = _to;
-        Approval(msg.sender, _to, _tokenId);
+        emit Approval(msg.sender, _to, _tokenId);
     }
 
-    function takeOwnership(uint256 _tokenId) public {
+    function takeOwnership(uint256 _tokenId) public virtual override {
         require(zombieApprovals[_tokenId] == msg.sender);
         _transfer(zombieToOwner[_tokenId], msg.sender, _tokenId);
     }
