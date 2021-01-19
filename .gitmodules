@@ -1,0 +1,3 @@
+[submodule "pos-portal"]
+	path = pos-portal
+	url = https://github.com/Hackito1217/pos-portal.git
